@@ -1,11 +1,11 @@
-package demojwt.jwt.jwt.Impl;
+package demojwt.jwt.jwt.user.details.Impl;
 
-import demojwt.jwt.jwt.UserDetailsAuth;
+import demojwt.jwt.jwt.user.details.UserDetailsAuth;
 import demojwt.jwt.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
