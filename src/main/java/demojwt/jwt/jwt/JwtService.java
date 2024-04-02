@@ -1,12 +1,12 @@
 package demojwt.jwt.jwt;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.stream.Collectors;
 
@@ -14,29 +14,26 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    private final JwtEncoder encoder;
-
-    public JwtService(JwtEncoder encoder) {
-        this.encoder = encoder;
-    }
+    @Autowired
+    JwtEncoder encoder;
 
     public String generateToken(Authentication auth) {
+        JwtClaimsSet claims = mapperParaJwtClaimsSet(auth, scope(auth));
+        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    private String scope(Authentication auth) {
+        return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+    }
+
+    private JwtClaimsSet mapperParaJwtClaimsSet(Authentication auth, String scope) {
         Instant now = Instant.now();
-        long expiry = 3600L;
-
-        String scope = auth
-                .getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
-
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        return JwtClaimsSet.builder()
                 .issuer("demo-jwt")
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(expiry))
+                .expiresAt(now.plusSeconds(300L)) //5 minutos
                 .subject(auth.getName())
                 .claim("scope", scope)
                 .build();
-        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-
     }
 }

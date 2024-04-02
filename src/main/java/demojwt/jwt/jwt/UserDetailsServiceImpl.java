@@ -1,6 +1,6 @@
-package demojwt.jwt.jwt.user.details.Impl;
+package demojwt.jwt.jwt;
 
-import demojwt.jwt.jwt.user.details.UserDetailsAuth;
+import demojwt.jwt.jwt.UserDetailsAuth;
 import demojwt.jwt.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,8 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .map(UserDetailsAuth::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não existente"));
+        return userRepository.findByUsername(username).map(UserDetailsAuth::new).orElseThrow(() -> new UsernameNotFoundException("Usuário não existente"));
     }
 }

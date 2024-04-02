@@ -1,4 +1,4 @@
-package demojwt.jwt.jwt.user.details;
+package demojwt.jwt.jwt;
 
 import demojwt.jwt.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;

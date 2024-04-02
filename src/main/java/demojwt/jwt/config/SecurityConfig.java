@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -16,7 +17,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -27,16 +27,13 @@ public class SecurityConfig {
     @Value("${jwt.public.key}")
     private RSAPublicKey key;
     @Value("${jwt.private.key}")
-    private RSAPrivateKey priv;
+    private RSAPrivateKey privateKey;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(c -> c.disable())
-                .authorizeHttpRequests(a -> a.requestMatchers("/authenticate").permitAll()
-                        .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer(c -> c.jwt(Customizer.withDefaults()));
-        return http.build();
+        return http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(
+                a -> a.requestMatchers("/auth").permitAll().anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults()).oauth2ResourceServer(c -> c.jwt(Customizer.withDefaults())).build();
     }
 
     @Bean
@@ -46,9 +43,8 @@ public class SecurityConfig {
 
     @Bean
     JwtEncoder jwtDecoder() {
-        var jwk = new RSAKey.Builder(key).privateKey(priv).build();
-        var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
+        var jwk = new RSAKey.Builder(key).privateKey(privateKey).build();
+        return new NimbusJwtEncoder(new ImmutableJWKSet<>(new JWKSet(jwk)));
     }
 
     @Bean
