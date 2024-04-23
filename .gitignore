@@ -33,4 +33,5 @@ build/
 .vscode/
 /.mvn/
 
-mvnw
+/jwt/mvnw
+/jwt/.mvn/wrapper/maven-wrapper.properties
